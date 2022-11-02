@@ -1,6 +1,4 @@
-install_app:
-	python3 -m venv venv && . venv/bin/activate && poetry install
-
+#yes, I had a plan to write some tests
 test_app:
 	docker-compose  -f ./docker-compose.yml -f ./docker-compose.local-overrides.yml run web pytest
 
@@ -13,6 +11,12 @@ build:
 
 up:
 	docker-compose -f ./docker-compose.yml -f ./docker-compose.local-overrides.yml up
+
+migrations:
+	docker-compose  -f ./docker-compose.yml -f ./docker-compose.local-overrides.yml run web python manage.py makemigrations shopplyapp
+
+migrate:
+	docker-compose  -f ./docker-compose.yml -f ./docker-compose.local-overrides.yml run web python manage.py migrate
 
 
 
