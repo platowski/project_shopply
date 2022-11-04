@@ -16,7 +16,7 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import include, path
 from rest_framework import routers
-from shopplyapp import views
+from shopplyapp.adapters.into.web import views
 from django.conf import settings
 from django.conf.urls.static import static
 
@@ -24,6 +24,7 @@ router = routers.DefaultRouter()
 router.register(r'users', views.UserViewSet)
 router.register(r'groups', views.GroupViewSet)
 router.register(r'products', views.ProductViewSet)
+router.register(r'stock', views.StockViewSet)
 router.register(r'orders', views.OrderViewSet)
 
 urlpatterns = [
