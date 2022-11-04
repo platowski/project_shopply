@@ -22,6 +22,8 @@ I have to admit that I like how DRF encourages to build Hypermedia/HATEOAS REST 
 There is lot to be done here, except for things marked as todo, proper exception handling. ( i.e. SQL integrity errors will pop out when one try to add quantity twice to one product)
 From product perspective there is lot that can be added - typical e-commerce features like basket, payment or shippment tracking.
 Although, very few product-related info has been shared. i.e. virtual products won't require shipping, event tickets might be as well delivered by email in printable form.
+I had no information about anticipated data volume nor throughput, so I sticked to relatively simple data structure, hoping that create transaction won't become a bottleneck fast. 
+
 
 My biggest sin during task was that not a single test has been written. I'm finishing it exceeding given timeframe significantly. 
 
