@@ -7,7 +7,7 @@ echo "Migrating Database"
 python manage.py migrate
 
 echo "Collecting Statics"
-python manage.py collectstatic
+#python manage.py collectstatic
 
 echo "Starting application"
 gunicorn --bind 0.0.0.0:8010 --workers 1 project_shopply.wsgi:application

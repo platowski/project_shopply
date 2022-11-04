@@ -1,15 +1,15 @@
 from django.contrib.auth.models import User, Group
 from rest_framework import viewsets, mixins, status
 from rest_framework import permissions
-from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework.viewsets import GenericViewSet
 
-from shopplyapp.commands import CreateOrderCommand
-from shopplyapp.mixins import PermissionPolicyMixin
-from shopplyapp.models import Product, Order
-from shopplyapp.permissions import IsOrdersOwner
-from shopplyapp.serializers import UserSerializer, GroupSerializer, ProductSerializer, OrderSerializer
+from shopplyapp.application.commands.commands import CreateOrderCommand
+from shopplyapp.application.helpers.mixins import PermissionPolicyMixin, MultiSerializerViewSetMixin
+from shopplyapp.adapters.out.db.models import Product, Order, Stock
+from shopplyapp.application.helpers.permissions import IsOrdersOwner
+from shopplyapp.adapters.into.web.serializers import UserSerializer, GroupSerializer, ProductSerializer, \
+    OrderSerializer, StockSerializer, OrderReadSerializer
 
 
 class UserViewSet(viewsets.ModelViewSet):
@@ -46,18 +46,32 @@ class ProductViewSet(PermissionPolicyMixin, viewsets.ModelViewSet):
     queryset = Product.objects.all().order_by('-price')
     serializer_class = ProductSerializer
 
+class StockViewSet(viewsets.ModelViewSet):
+    """
+    API endpoint that allows Products Stock to be listed, viewed or edited
+    """
+    permission_classes = [permissions.IsAuthenticated, permissions.IsAdminUser]
+
+    queryset = Stock.objects.all().order_by('-product_id')
+    serializer_class = StockSerializer
+
 class OrderViewSet(PermissionPolicyMixin,
+                   MultiSerializerViewSetMixin,
                    mixins.CreateModelMixin,
                    mixins.RetrieveModelMixin,
                    mixins.ListModelMixin,
                    GenericViewSet):
     queryset = Order.objects.all().order_by('-created_at')
     serializer_class = OrderSerializer
+    serializer_action_classes = {
+        'list': OrderReadSerializer,
+        'retrieve': OrderReadSerializer,
+    }
     permission_classes = [permissions.IsAuthenticated, IsOrdersOwner | permissions.IsAdminUser]
     permission_classes_per_method = {
         "create": [permissions.IsAuthenticated, permissions.IsAdminUser],
-        "update": [permissions.IsAuthenticated, IsOrdersOwner | permissions.IsAdminUser],
-        "partial_update": [permissions.IsAuthenticated, IsOrdersOwner | permissions.IsAdminUser],
+        # "update": [permissions.IsAuthenticated, IsOrdersOwner | permissions.IsAdminUser],
+        # "partial_update": [permissions.IsAuthenticated, IsOrdersOwner | permissions.IsAdminUser],
         "list": [permissions.IsAuthenticated, IsOrdersOwner | permissions.IsAdminUser],
         "retrieve": [permissions.IsAuthenticated, IsOrdersOwner | permissions.IsAdminUser]
     }
@@ -70,4 +84,3 @@ class OrderViewSet(PermissionPolicyMixin,
         headers = self.get_success_headers(serializer.data)
         return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
 
-    # @action for payment

@@ -17,9 +17,15 @@ http://localhost:8010
 I hope using DRF is not cheating. ;) I've done a quick research and it came up as a go to tool. 
 I haven't put a lot of effort into auth / user part. I don't want to reinvent the wheel, so I used DRF's builtin. 
 
-I have to admit that I like how DRF encourages to build Hypermedia/HATEOAS REST API's. 
+I have to admit that I like how DRF encourages to build Hypermedia/HATEOAS REST API's, however I spent too little time on docs to use it fully.
 
-Deployment process (imaginary)
+There is lot to be done here, except for things marked as todo, proper exception handling. ( i.e. SQL integrity errors will pop out when one try to add quantity twice to one product)
+From product perspective there is lot that can be added - typical e-commerce features like basket, payment or shippment tracking.
+Although, very few product-related info has been shared. i.e. virtual products won't require shipping, event tickets might be as well delivered by email in printable form.
+
+My biggest sin during task was that not a single test has been written. I'm finishing it exceeding given timeframe significantly. 
+
+#Deployment process (imaginary)
 There are two infrastructure related parts of the code:
 1. circleCi config
 2. AWS CDK infra as code (or Terraform/K8s )
