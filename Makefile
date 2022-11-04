@@ -18,5 +18,5 @@ migrations:
 migrate:
 	docker-compose  -f ./docker-compose.yml -f ./docker-compose.local-overrides.yml run web python manage.py migrate
 
-
-
+collect_static:
+	docker-compose  -f ./docker-compose.yml -f ./docker-compose.local-overrides.yml run web python manage.py collectstatic
