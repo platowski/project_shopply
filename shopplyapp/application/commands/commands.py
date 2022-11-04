@@ -1,4 +1,4 @@
-from shopplyapp.adapters.into.web.serializers import OrderSerializer
+from shopplyapp.adapters.into.web.serializers import OrderSerializer, OrderReadSerializer
 from shopplyapp.adapters.out.db.models import ProductBatch, Stock, Order
 from shopplyapp.application.helpers.exceptions import OutOfStockException
 
@@ -16,13 +16,14 @@ class CreateOrderCommand:
         # Cancelling order will release quantity (product.quantity += ... )
 
         order = Order(customer_id=customer.id, total=total)
-        # @todo transaction!
+        # @todo transaction (at least read-commited)!
         order.save()
-        batch = ProductBatch(sku_id=sku.id, quantity=int(quantity), order_id=order.id)
+        batch = ProductBatch(sku=sku, quantity=int(quantity), order_id=order.id)
         batch.save()
         sku.quantity -= quantity
         sku.save()
         # @todo transaction commit
+        return order.id
 
     @staticmethod
     def get_stock_unit(product_id: int) -> Stock:
