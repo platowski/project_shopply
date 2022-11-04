@@ -90,8 +90,7 @@ class OrderViewSet(
     ]
     permission_classes_per_method = {
         "create": [permissions.IsAuthenticated, permissions.IsAdminUser],
-        # "update": [permissions.IsAuthenticated, IsOrdersOwner | permissions.IsAdminUser],
-        # "partial_update": [permissions.IsAuthenticated, IsOrdersOwner | permissions.IsAdminUser],
+
         "list": [permissions.IsAuthenticated, IsOrdersOwner | permissions.IsAdminUser],
         "retrieve": [
             permissions.IsAuthenticated,
@@ -103,8 +102,8 @@ class OrderViewSet(
 
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
-        CreateOrderCommand.execute(serializer, customer=self.request.user)
-        headers = self.get_success_headers(serializer.data)
+        order_id = CreateOrderCommand.execute(serializer, customer=self.request.user)
+        response_data = {'order.id': order_id}
         return Response(
-            serializer.data, status=status.HTTP_201_CREATED, headers=headers
+            response_data, status=status.HTTP_201_CREATED
         )
