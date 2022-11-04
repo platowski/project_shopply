@@ -6,10 +6,10 @@ from shopplyapp.application.helpers.exceptions import OutOfStockException
 class CreateOrderCommand:
     @classmethod
     def execute(cls, serializer: OrderSerializer, customer):
-        product_id = int(serializer.initial_data['product'])
-        quantity = int(serializer.initial_data['quantity'])
+        product_id = int(serializer.initial_data["product"])
+        quantity = int(serializer.initial_data["quantity"])
         sku = cls.get_stock_unit(product_id=product_id)
-        cls.validate_product_availability(sku,int(quantity))
+        cls.validate_product_availability(sku, int(quantity))
         total = sku.product.price * quantity
         # It is super simple approach to avoid race condition when multiple users want to buy last item
         # It requires async vacuum that will be fired up each n minutes to cancel unpaid orders older than X
@@ -20,10 +20,9 @@ class CreateOrderCommand:
         order.save()
         batch = ProductBatch(sku_id=sku.id, quantity=int(quantity), order_id=order.id)
         batch.save()
-        sku.quantity-=quantity
+        sku.quantity -= quantity
         sku.save()
         # @todo transaction commit
-
 
     @staticmethod
     def get_stock_unit(product_id: int) -> Stock:
@@ -32,4 +31,6 @@ class CreateOrderCommand:
     @staticmethod
     def validate_product_availability(sku: Stock, order_quantity: int):
         if sku.quantity < order_quantity:
-            raise OutOfStockException("Sorry, we don't have enough quantity of {}".format(sku.product.name))
+            raise OutOfStockException(
+                "Sorry, we don't have enough quantity of {}".format(sku.product.name)
+            )
